@@ -47,15 +47,15 @@ public class AuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    protected String signerKey;
 
     @NonFinal
     @Value("${jwt.valid-duration}")
-    protected long VALID_DURATION;
+    protected long validDuration;
 
     @NonFinal
     @Value("${jwt.refreshable-duration}")
-    protected long REFRESHABLE_DURATION;
+    protected long refreshableDuration;
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
@@ -102,7 +102,7 @@ public class AuthenticationService {
     }
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -111,7 +111,7 @@ public class AuthenticationService {
                         .getJWTClaimsSet()
                         .getIssueTime()
                         .toInstant()
-                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                        .plus(refreshableDuration, ChronoUnit.SECONDS)
                         .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
@@ -153,7 +153,7 @@ public class AuthenticationService {
                 .issuer("zayden.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
+                        Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
@@ -163,7 +163,7 @@ public class AuthenticationService {
         JWSObject jwsObject = new JWSObject(header, payload);
 
         try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            jwsObject.sign(new MACSigner(signerKey.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
@@ -177,9 +177,9 @@ public class AuthenticationService {
             user.getRoles().forEach(role -> {
                 stringJoiner.add("ROLE_" + role.getName());
                 if (!CollectionUtils.isEmpty(role.getPermissions()))
-                    role.getPermissions().forEach(permission -> {
-                        stringJoiner.add(permission.getName());
-                    });
+                    role.getPermissions().forEach(permission ->
+                        stringJoiner.add(permission.getName())
+                    );
             });
         return stringJoiner.toString();
     }
