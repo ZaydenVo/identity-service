@@ -1,10 +1,11 @@
 package com.zayden.identity_service.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,8 +19,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
     PARSE_EXCEPTION(1007, "Parse exception.", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(1008, "You do not have permission!", HttpStatus.FORBIDDEN),
-    INVALID_DOB(1009, "Your age must be at least {min}", HttpStatus.BAD_REQUEST)
-    ;
+    INVALID_DOB(1009, "Your age must be at least {min}", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;
@@ -30,5 +30,4 @@ public enum ErrorCode {
         this.message = message;
         this.statusCode = statusCode;
     }
-
 }
