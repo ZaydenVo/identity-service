@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception.", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_EXISTED(1001, "User existed!", HttpStatus.BAD_REQUEST),
-    USERNAME_INVALID(1002, "Username must be at least {min} chareacters!", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID(1002, "Username must be at least {min} characters!", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1003, "Password must be at least {min} characters!", HttpStatus.BAD_REQUEST),
     INVALID_KEY(1004, "Invalid message key!", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1005, "User is not existed!", HttpStatus.NOT_FOUND),
