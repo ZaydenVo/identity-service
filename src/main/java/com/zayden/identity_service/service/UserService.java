@@ -3,6 +3,8 @@ package com.zayden.identity_service.service;
 import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,22 +38,25 @@ public class UserService {
     RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
-
-        if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
-
         User user = userMapper.toUser(request);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = new HashSet<Role>();
+        HashSet<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findById("USER").orElseGet(() -> {
-            Role role =
-                    new Role().builder().name("USER").description("User role.").build();
+            Role role = Role.builder().name("USER").description("User role.").build();
             return roleRepository.save(role);
         });
         roles.add(userRole);
+        user.setRoles(roles);
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse getMyInfo() {
