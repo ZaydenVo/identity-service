@@ -38,8 +38,7 @@ public class ApplicationInitConfig {
                 var roles = new HashSet<Role>();
 
                 Role adminRole = roleRepository.findById("ADMIN").orElseGet(() -> {
-                    Role role = Role
-                            .builder()
+                    Role role = Role.builder()
                             .name("ADMIN")
                             .description("Admin role")
                             .build();
