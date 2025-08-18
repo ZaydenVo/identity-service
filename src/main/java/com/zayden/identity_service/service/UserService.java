@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.zayden.identity_service.dto.request.UserCreationRequest;
 import com.zayden.identity_service.dto.request.UserUpdateRequest;
 import com.zayden.identity_service.dto.response.UserResponse;
+import com.zayden.identity_service.entity.Role;
 import com.zayden.identity_service.entity.User;
-import com.zayden.identity_service.enums.Role;
 import com.zayden.identity_service.exception.AppException;
 import com.zayden.identity_service.exception.ErrorCode;
 import com.zayden.identity_service.mapper.UserMapper;
@@ -43,10 +43,13 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-
-        // user.setRoles(roles);
+        var roles = new HashSet<Role>();
+        Role userRole = roleRepository.findById("USER").orElseGet(() -> {
+            Role role =
+                    new Role().builder().name("USER").description("User role.").build();
+            return roleRepository.save(role);
+        });
+        roles.add(userRole);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

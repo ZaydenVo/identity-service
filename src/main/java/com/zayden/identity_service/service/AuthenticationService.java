@@ -177,9 +177,7 @@ public class AuthenticationService {
             user.getRoles().forEach(role -> {
                 stringJoiner.add("ROLE_" + role.getName());
                 if (!CollectionUtils.isEmpty(role.getPermissions()))
-                    role.getPermissions().forEach(permission ->
-                        stringJoiner.add(permission.getName())
-                    );
+                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
             });
         return stringJoiner.toString();
     }
